@@ -22,3 +22,8 @@ variable "azs" {
   description = "List of availability zones"
   type        = list(string)
 }
+
+variable "vpc_suffix" {
+  description = "A unique suffix to avoid naming conflicts"
+  type        = string
+}
