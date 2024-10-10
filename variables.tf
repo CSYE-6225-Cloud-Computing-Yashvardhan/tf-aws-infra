@@ -27,3 +27,8 @@ variable "vpc_suffix" {
   description = "A unique suffix to avoid naming conflicts"
   type        = string
 }
+
+variable "dest_cidr_block" {
+  description = "Destination cidr block in route"
+  type        = string
+}
