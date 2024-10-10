@@ -23,4 +23,4 @@ jobs:
         run: terraform fmt -check -recursive
 
       - name: Terraform Validate
-        run: terraform validate -input=false
+        run: terraform validate
