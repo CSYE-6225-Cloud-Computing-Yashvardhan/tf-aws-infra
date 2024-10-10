@@ -1,14 +1,14 @@
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr
   tags = {
-    Name = "main-vpc"
+    Name = var.vpc_tag_name
   }
 }
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "main-igw"
+    Name = var.int_gateway_name
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "private" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "public-route-table"
+    Name = var.pub-route-tbl
   }
 }
 
@@ -57,7 +57,7 @@ resource "aws_route_table_association" "public_assoc" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "private-route-table"
+    Name = var.pri_route_tbl
   }
 }
 

@@ -32,3 +32,23 @@ variable "dest_cidr_block" {
   description = "Destination cidr block in route"
   type        = string
 }
+
+variable "vpc_tag_name" {
+  description = "VPC tag name"
+  type        = string
+}
+
+variable "int_gateway_name" {
+  description = "Internet gateway tag name"
+  type        = string
+}
+
+variable "pub-route-tbl" {
+  description = "Public Route Table"
+  type        = string
+}
+
+variable "pri_route_tbl" {
+  description = "Private Route Table"
+  type        = string
+}
