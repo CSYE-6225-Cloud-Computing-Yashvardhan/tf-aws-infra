@@ -1,16 +1,16 @@
 resource "aws_instance" "web_app" {
-  ami                         = "ami-088c15838c234ce29"
-  instance_type               = "t2.small"
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public[0].id
   security_groups             = [aws_security_group.app_sg.id]
-  associate_public_ip_address = true
-  key_name                    = "aws-dev"
-  disable_api_termination     = false
+  associate_public_ip_address = var.assoc_public_ip
+  key_name                    = var.aws_configured_key_name
+  disable_api_termination     = var.disable_api_term
 
   root_block_device {
-    volume_size           = 25
-    volume_type           = "gp2"
-    delete_on_termination = true
+    volume_size           = var.vol_size
+    volume_type           = var.vol_type
+    delete_on_termination = var.delete_on_term
   }
 
   tags = {
