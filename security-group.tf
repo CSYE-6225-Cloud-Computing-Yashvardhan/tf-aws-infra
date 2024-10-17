@@ -32,7 +32,7 @@ resource "aws_security_group" "app_sg" {
     to_port     = var.custom_port
     protocol    = var.protocol
     cidr_blocks = var.custom_cidr
-    description = "Allow traffic for the application"
+    description = "Allow Custom traffic for the application"
   }
 
   egress {
