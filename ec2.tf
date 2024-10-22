@@ -13,6 +13,27 @@ resource "aws_instance" "web_app" {
     delete_on_termination = var.delete_on_term
   }
 
+  user_data = <<-EOF
+              #!/bin/bash
+              cd /home/csye6225/webapp/
+              touch .env
+              echo "DB_HOST=${element(split(":", aws_db_instance.mydb.endpoint), 0)}" >> /home/csye6225/webapp/.env
+              echo "DB_USER=${aws_db_instance.mydb.username}" >> /home/csye6225/webapp/.env
+              echo "DB_PASSWORD=${aws_db_instance.mydb.password}" >> /home/csye6225/webapp/.env
+              echo "DB_NAME=${aws_db_instance.mydb.db_name}" >> /home/csye6225/webapp/.env
+              echo "DB_PORT=3306" >> /home/csye6225/webapp/.env
+              echo "PORT=3000" >> /home/csye6225/webapp/.env
+              sudo systemctl enable webapp.service
+              sudo systemctl status webapp.service
+              sudo systemctl start webapp.service
+              webappStarted=$?
+              if [ $webappStarted -eq 0 ]; then 
+                  echo "Success - webapp running."
+              else
+                  echo "Failed - webapp not running."
+              fi
+              EOF
+
   tags = {
     Name = "webapp-${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   }
