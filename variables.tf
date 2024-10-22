@@ -153,3 +153,69 @@ variable "outbound_cidr" {
   type        = list(string)
 }
 
+variable "db_engine" {
+  description = "DB engine"
+  type        = string
+}
+
+variable "db_engine_ver" {
+  description = "DB engine version"
+  type        = string
+}
+
+variable "db_instance_class" {
+  description = "DB instance type"
+  type        = string
+}
+
+variable "db_storage" {
+  description = "DB storage space"
+  type        = number
+}
+
+variable "db_identifier" {
+  description = "DB Identifier"
+  type        = string
+}
+
+variable "db_name" {
+  description = "DB name"
+  type        = string
+}
+
+variable "db_user" {
+  description = "DB username"
+  type        = string
+}
+
+variable "db_pass" {
+  description = "DB password"
+  type        = string
+}
+
+variable "db_multi_az" {
+  description = "DB multi az availability"
+  type        = bool
+}
+
+variable "db_pub_access" {
+  description = "DB public access"
+  type        = bool
+}
+
+variable "db_skip_fi_snap" {
+  description = "DB skip final snaphot"
+  type        = bool
+}
+
+variable "db_para_family" {
+  description = "DB parameter family"
+  type        = string
+}
+
+variable "db_port" {
+  description = "DB ports"
+  type        = number
+}
+
+

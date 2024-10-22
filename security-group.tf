@@ -47,3 +47,29 @@ resource "aws_security_group" "app_sg" {
     Name = "app-sg"
   }
 }
+
+resource "aws_security_group" "db_sg" {
+  vpc_id      = aws_vpc.main.id
+  name        = "db-security-group"
+  description = "Allow MySQL inbound traffic from the application security group"
+
+  ingress {
+    from_port       = var.db_port
+    to_port         = var.db_port
+    protocol        = var.protocol
+    security_groups = [aws_security_group.app_sg.id]
+    description     = "Allow MySQL traffic from the app security group"
+  }
+
+  egress {
+    from_port   = var.outbound_port
+    to_port     = var.outbound_port
+    protocol    = var.outbound_protocol
+    cidr_blocks = var.outbound_cidr
+    description = "Allow all outbound traffic"
+  }
+
+  tags = {
+    Name = "db-sg"
+  }
+}
