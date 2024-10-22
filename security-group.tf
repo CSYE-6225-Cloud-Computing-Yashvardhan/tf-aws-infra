@@ -54,18 +54,18 @@ resource "aws_security_group" "db_sg" {
   description = "Allow MySQL inbound traffic from the application security group"
 
   ingress {
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
+    from_port       = var.db_port
+    to_port         = var.db_port
+    protocol        = var.protocol
     security_groups = [aws_security_group.app_sg.id]
     description     = "Allow MySQL traffic from the app security group"
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = var.outbound_port
+    to_port     = var.outbound_port
+    protocol    = var.outbound_protocol
+    cidr_blocks = var.outbound_cidr
     description = "Allow all outbound traffic"
   }
 
