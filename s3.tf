@@ -1,7 +1,7 @@
 resource "random_uuid" "uuid" {}
 
 resource "aws_s3_bucket" "webapp_bucket" {
-  bucket        = "webapp-${random_uuid.image_uuid.result}"
+  bucket        = "webapp-${random_uuid.uuid.result}"
   force_destroy = true
 
   tags = {
@@ -14,7 +14,7 @@ resource "aws_s3_bucket_acl" "webapp_bucket_acl" {
   acl    = "private"
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle_config" {
+resource "aws_s3_bucket_lifecycle_configuration" "webapp_bucket_lifecycle" {
   bucket = aws_s3_bucket.webapp_bucket.id
 
   rule {
@@ -28,8 +28,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle_config" {
   }
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "s3_encryption" {
-  bucket = aws_s3_bucket.bucket.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "webapp_bucket_encryption" {
+  bucket = aws_s3_bucket.webapp_bucket.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -37,3 +37,4 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "s3_encryption" {
     }
   }
 }
+
