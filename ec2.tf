@@ -24,6 +24,7 @@ resource "aws_instance" "web_app" {
               echo "DB_NAME=${aws_db_instance.mydb.db_name}" >> /home/csye6225/webapp/.env
               echo "DB_PORT=3306" >> /home/csye6225/webapp/.env
               echo "PORT=3000" >> /home/csye6225/webapp/.env
+              echo "AWS_S3_BUCKET_NAME=${aws_s3_bucket.webapp_bucket.bucket}" >> .env
               sudo systemctl enable webapp.service
               sudo systemctl status webapp.service
               sudo systemctl start webapp.service
