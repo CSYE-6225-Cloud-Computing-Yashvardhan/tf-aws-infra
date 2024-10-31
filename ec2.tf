@@ -6,7 +6,7 @@ resource "aws_instance" "web_app" {
   associate_public_ip_address = var.assoc_public_ip
   key_name                    = var.aws_configured_key_name
   disable_api_termination     = var.disable_api_term
-  iam_instance_profile        = aws_iam_instance_profile.ec2_access_role.name
+  iam_instance_profile        = aws_iam_instance_profile.webapp_s3_access_instance_profile.name
 
   root_block_device {
     volume_size           = var.vol_size
@@ -28,13 +28,17 @@ resource "aws_instance" "web_app" {
               sudo systemctl enable webapp.service
               sudo systemctl status webapp.service
               sudo systemctl start webapp.service
-              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/cloudwatch-config.json -s
-              sudo systemctl start amazon-cloudwatch-agent
-              webappStarted=$?
               if [ $webappStarted -eq 0 ]; then 
                   echo "Success - webapp running."
               else
                   echo "Failed - webapp not running."
+              fi
+              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/cloudwatch-config.json -s
+              cloudwatch=$?
+              if [ $cloudwatch -eq 0 ]; then 
+                  echo "Success - Cloudwatch running."
+              else
+                  echo "Failed - Cloudwatch not running."
               fi
               EOF
 

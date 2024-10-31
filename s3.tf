@@ -9,10 +9,10 @@ resource "aws_s3_bucket" "webapp_bucket" {
   }
 }
 
-resource "aws_s3_bucket_acl" "webapp_bucket_acl" {
+/*resource "aws_s3_bucket_acl" "webapp_bucket_acl" {
   bucket = aws_s3_bucket.webapp_bucket.id
   acl    = "private"
-}
+}*/
 
 resource "aws_s3_bucket_lifecycle_configuration" "webapp_bucket_lifecycle" {
   bucket = aws_s3_bucket.webapp_bucket.id
