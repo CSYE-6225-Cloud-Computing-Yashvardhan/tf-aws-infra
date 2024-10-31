@@ -223,4 +223,15 @@ variable "domain_name" {
   type        = string
 }
 
+variable "storage_class" {
+  description = "storage class type for S3"
+  type        = string
+}
+
+variable "encrypt_algo" {
+  description = "Encryption algorithm for S3"
+  type        = string
+}
+
+
 

@@ -9,11 +9,6 @@ resource "aws_s3_bucket" "webapp_bucket" {
   }
 }
 
-/*resource "aws_s3_bucket_acl" "webapp_bucket_acl" {
-  bucket = aws_s3_bucket.webapp_bucket.id
-  acl    = "private"
-}*/
-
 resource "aws_s3_bucket_lifecycle_configuration" "webapp_bucket_lifecycle" {
   bucket = aws_s3_bucket.webapp_bucket.id
 
@@ -23,7 +18,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "webapp_bucket_lifecycle" {
 
     transition {
       days          = 30
-      storage_class = "STANDARD_IA"
+      storage_class = var.storage_class
     }
   }
 }
@@ -33,7 +28,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "webapp_bucket_enc
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm = var.encrypt_algo
     }
   }
 }
