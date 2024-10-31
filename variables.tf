@@ -218,4 +218,9 @@ variable "db_port" {
   type        = number
 }
 
+variable "domain_name" {
+  description = "Domain Name (dev/demo) account"
+  type        = string
+}
+
 

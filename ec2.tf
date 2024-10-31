@@ -6,6 +6,7 @@ resource "aws_instance" "web_app" {
   associate_public_ip_address = var.assoc_public_ip
   key_name                    = var.aws_configured_key_name
   disable_api_termination     = var.disable_api_term
+  iam_instance_profile        = aws_iam_instance_profile.webapp_s3_access_instance_profile.name
 
   root_block_device {
     volume_size           = var.vol_size
@@ -23,14 +24,21 @@ resource "aws_instance" "web_app" {
               echo "DB_NAME=${aws_db_instance.mydb.db_name}" >> /home/csye6225/webapp/.env
               echo "DB_PORT=3306" >> /home/csye6225/webapp/.env
               echo "PORT=3000" >> /home/csye6225/webapp/.env
+              echo "AWS_S3_BUCKET_NAME=${aws_s3_bucket.webapp_bucket.bucket}" >> .env
               sudo systemctl enable webapp.service
               sudo systemctl status webapp.service
               sudo systemctl start webapp.service
-              webappStarted=$?
               if [ $webappStarted -eq 0 ]; then 
                   echo "Success - webapp running."
               else
                   echo "Failed - webapp not running."
+              fi
+              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/cloudwatch-config.json -s
+              cloudwatch=$?
+              if [ $cloudwatch -eq 0 ]; then 
+                  echo "Success - Cloudwatch running."
+              else
+                  echo "Failed - Cloudwatch not running."
               fi
               EOF
 
