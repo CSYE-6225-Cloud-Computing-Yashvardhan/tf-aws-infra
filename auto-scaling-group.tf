@@ -1,8 +1,8 @@
 resource "aws_autoscaling_group" "web_app_asg" {
   name                      = "web_app_asg"
-  desired_capacity          = 1
-  max_size                  = 3
-  min_size                  = 1
+  desired_capacity          = var.desired_capacity_asg
+  max_size                  = var.max_size_asg
+  min_size                  = var.min_size_asg
   vpc_zone_identifier       = aws_subnet.public[*].id
   health_check_type         = "EC2"
   health_check_grace_period = 300
@@ -28,7 +28,7 @@ resource "aws_autoscaling_policy" "web_app_asg_scale_up_policy" {
   name                   = "web_app_asg_scale_up_policy"
   scaling_adjustment     = 1
   adjustment_type        = "ChangeInCapacity"
-  cooldown               = 60
+  cooldown               = var.scaling_policy_cooldown
   autoscaling_group_name = aws_autoscaling_group.web_app_asg.name
 }
 
@@ -38,9 +38,9 @@ resource "aws_cloudwatch_metric_alarm" "web_app_asg_scale_up_alarm" {
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 120
+  period              = var.scaling_alarm_period
   statistic           = "Average"
-  threshold           = 8
+  threshold           = var.cpu_utilization_scale_up_threshold
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.web_app_asg.name
   }
@@ -52,7 +52,7 @@ resource "aws_autoscaling_policy" "web_app_asg_scale_down_policy" {
   name                   = "web_app_asg_scale_down_policy"
   scaling_adjustment     = -1
   adjustment_type        = "ChangeInCapacity"
-  cooldown               = 60
+  cooldown               = var.scaling_policy_cooldown
   autoscaling_group_name = aws_autoscaling_group.web_app_asg.name
 }
 
@@ -62,9 +62,9 @@ resource "aws_cloudwatch_metric_alarm" "web_app_asg_scale_down_alarm" {
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 120
+  period              = var.scaling_alarm_period
   statistic           = "Average"
-  threshold           = 7.5
+  threshold           = var.cpu_utilization_scale_down_threshold
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.web_app_asg.name
   }

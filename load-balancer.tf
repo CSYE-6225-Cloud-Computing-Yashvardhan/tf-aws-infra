@@ -32,7 +32,7 @@ resource "aws_lb_target_group" "web_app_tg" {
 
 resource "aws_lb_listener" "web_app_listener" {
   load_balancer_arn = aws_lb.web_app_lb.arn
-  port              = 80
+  port              = var.http_port
   protocol          = "HTTP"
 
   default_action {

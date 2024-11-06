@@ -64,17 +64,17 @@ resource "aws_security_group" "lb_sg" {
   description = "Allow HTTP and HTTPS traffic to load balancer"
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = var.http_port
+    to_port     = var.http_port
+    protocol    = var.protocol
+    cidr_blocks = var.http_cidr
   }
 
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = var.https_port
+    to_port     = var.https_port
+    protocol    = var.protocol
+    cidr_blocks = var.https_cidr
   }
 
   egress {
