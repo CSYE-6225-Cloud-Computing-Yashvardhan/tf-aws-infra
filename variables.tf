@@ -233,5 +233,45 @@ variable "encrypt_algo" {
   type        = string
 }
 
+variable "desired_capacity_asg" {
+  description = "Desired Capacity for Auto Scaling Group"
+  type        = number
+}
+
+variable "max_size_asg" {
+  description = "Max Capacity for Auto Scaling Group"
+  type        = number
+}
+
+variable "min_size_asg" {
+  description = "Min Capacity for Auto Scaling Group"
+  type        = number
+}
+
+variable "cpu_utilization_scale_up_threshold" {
+  description = "CPU utilization threshold to scale up"
+  type        = number
+  default     = 9
+}
+
+variable "cpu_utilization_scale_down_threshold" {
+  description = "CPU utilization threshold to scale down"
+  type        = number
+  default     = 7.5
+}
+
+variable "scaling_alarm_period" {
+  description = "Scaling Alarm Period"
+  type        = number
+  default     = 120
+}
+
+variable "scaling_policy_cooldown" {
+  description = "Scaling Policy Cooldown period"
+  type        = number
+  default     = 60
+}
+
+
 
 

@@ -12,27 +12,11 @@ resource "aws_security_group" "app_sg" {
   }
 
   ingress {
-    from_port   = var.http_port
-    to_port     = var.http_port
-    protocol    = var.protocol
-    cidr_blocks = var.http_cidr
-    description = "Allow HTTP traffic from anywhere"
-  }
-
-  ingress {
-    from_port   = var.https_port
-    to_port     = var.https_port
-    protocol    = var.protocol
-    cidr_blocks = var.https_cidr
-    description = "Allow HTTPS traffic from anywhere"
-  }
-
-  ingress {
-    from_port   = var.custom_port
-    to_port     = var.custom_port
-    protocol    = var.protocol
-    cidr_blocks = var.custom_cidr
-    description = "Allow Custom traffic for the application"
+    from_port       = var.custom_port
+    to_port         = var.custom_port
+    protocol        = var.protocol
+    security_groups = [aws_security_group.lb_sg.id]
+    description     = "Allow Custom traffic for the application"
   }
 
   egress {
@@ -73,3 +57,35 @@ resource "aws_security_group" "db_sg" {
     Name = "db-sg"
   }
 }
+
+resource "aws_security_group" "lb_sg" {
+  vpc_id      = aws_vpc.main.id
+  name        = "load-balancer-security-group"
+  description = "Allow HTTP and HTTPS traffic to load balancer"
+
+  ingress {
+    from_port   = var.http_port
+    to_port     = var.http_port
+    protocol    = var.protocol
+    cidr_blocks = var.http_cidr
+  }
+
+  ingress {
+    from_port   = var.https_port
+    to_port     = var.https_port
+    protocol    = var.protocol
+    cidr_blocks = var.https_cidr
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "load-balancer-sg"
+  }
+}
+

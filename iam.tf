@@ -29,11 +29,8 @@ resource "aws_iam_policy" "webapp_s3_access_policy" {
       {
         "Action" : [
           "s3:GetObject",
-          "s3:GetObjectAcl",
           "s3:PutObject",
-          "s3:PutObjectAcl",
-          "s3:DeleteObject",
-          "s3:ListBucket"
+          "s3:DeleteObject"
         ],
         "Effect" : "Allow",
         "Resource" : [
