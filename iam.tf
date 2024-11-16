@@ -83,4 +83,29 @@ resource "aws_iam_role_policy_attachment" "rds_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_vpc_access" {
+  role       = aws_iam_role.lambda_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
 
+
+resource "aws_iam_policy" "sns_publish_policy" {
+  name        = "sns_publish_policy"
+  description = "Policy to allow Lambda to publish to the email verification SNS topic"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "sns:Publish"
+        Resource = aws_sns_topic.email_verification.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "sns_publish" {
+  role       = aws_iam_role.lambda_execution_role.name
+  policy_arn = aws_iam_policy.sns_publish_policy.arn
+}

@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "email_verification_lambda" {
-  filename      = "path/to/your/lambda.zip"
+  filename      = "F:/Classwork/CSYE-6225 Cloud/Cloud Native App/serverless/lambda.zip"
   function_name = "email_verification_lambda"
   role          = aws_iam_role.lambda_execution_role.arn
   handler       = "index.handler"
