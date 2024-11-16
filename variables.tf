@@ -272,6 +272,16 @@ variable "scaling_policy_cooldown" {
   default     = 60
 }
 
+variable "http_ipv6_cidr" {
+  description = "List of IPv6 CIDR ranges for HTTP traffic"
+  type        = list(string)
+}
+
+variable "https_ipv6_cidr" {
+  description = "List of IPv6 CIDR ranges for HTTPS traffic"
+  type        = list(string)
+}
+
 
 
 
