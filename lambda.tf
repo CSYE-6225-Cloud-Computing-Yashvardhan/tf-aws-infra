@@ -6,11 +6,6 @@ resource "aws_lambda_function" "email_verification_lambda" {
   runtime       = "nodejs18.x"
   timeout       = 15
 
-  vpc_config {
-    subnet_ids         = aws_subnet.private[*].id
-    security_group_ids = [aws_security_group.lambda_sg.id]
-  }
-
   environment {
     variables = {
       DB_HOST         = element(split(":", aws_db_instance.mydb.endpoint), 0)
