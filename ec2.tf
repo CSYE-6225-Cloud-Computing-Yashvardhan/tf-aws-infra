@@ -64,6 +64,8 @@ resource "aws_launch_template" "web_app_launch_template" {
               echo "DB_PORT=3306" >> /home/csye6225/webapp/.env
               echo "PORT=3000" >> /home/csye6225/webapp/.env
               echo "AWS_S3_BUCKET_NAME=${aws_s3_bucket.webapp_bucket.bucket}" >> .env
+              echo "EMAIL_VERIFICATION_SNS_ARN=${aws_sns_topic.email_verification.arn}" >> .env
+              echo "DOMAIN=${data.aws_route53_zone.domain.name}" >> .env
               sudo systemctl enable webapp.service
               sudo systemctl status webapp.service
               sudo systemctl start webapp.service

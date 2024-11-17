@@ -45,6 +45,15 @@ resource "aws_security_group" "db_sg" {
     description     = "Allow MySQL traffic from the app security group"
   }
 
+  ingress {
+    from_port       = var.db_port
+    to_port         = var.db_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lambda_sg.id]
+    description     = "Allow MySQL traffic from the Lambda security group"
+  }
+
+
   egress {
     from_port   = var.outbound_port
     to_port     = var.outbound_port
@@ -64,18 +73,37 @@ resource "aws_security_group" "lb_sg" {
   description = "Allow HTTP and HTTPS traffic to load balancer"
 
   ingress {
-    from_port   = var.http_port
-    to_port     = var.http_port
-    protocol    = var.protocol
-    cidr_blocks = var.http_cidr
+    from_port        = var.http_port
+    to_port          = var.http_port
+    protocol         = var.protocol
+    cidr_blocks      = var.http_cidr
+    ipv6_cidr_blocks = var.http_ipv6_cidr
   }
 
   ingress {
-    from_port   = var.https_port
-    to_port     = var.https_port
-    protocol    = var.protocol
-    cidr_blocks = var.https_cidr
+    from_port        = var.https_port
+    to_port          = var.https_port
+    protocol         = var.protocol
+    cidr_blocks      = var.https_cidr
+    ipv6_cidr_blocks = var.https_ipv6_cidr
   }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "load-balancer-sg"
+  }
+}
+
+resource "aws_security_group" "lambda_sg" {
+  vpc_id = aws_vpc.main.id
+  name   = "lambda-security-group"
 
   egress {
     from_port   = 0
@@ -85,7 +113,7 @@ resource "aws_security_group" "lb_sg" {
   }
 
   tags = {
-    Name = "load-balancer-sg"
+    Name = "lambda-sg"
   }
 }
 
