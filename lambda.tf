@@ -3,7 +3,7 @@ resource "aws_lambda_function" "email_verification_lambda" {
   function_name = "email_verification_lambda"
   role          = aws_iam_role.lambda_execution_role.arn
   handler       = "index.handler"
-  runtime       = "nodejs20.x"
+  runtime       = "nodejs18.x"
   timeout       = 15
 
   vpc_config {
@@ -13,11 +13,12 @@ resource "aws_lambda_function" "email_verification_lambda" {
 
   environment {
     variables = {
-      DB_HOST     = element(split(":", aws_db_instance.mydb.endpoint), 0)
-      DB_USER     = aws_db_instance.mydb.username
-      DB_PASSWORD = aws_db_instance.mydb.password
-      DB_NAME     = aws_db_instance.mydb.db_name
-      DB_PORT     = "3306"
+      DB_HOST         = element(split(":", aws_db_instance.mydb.endpoint), 0)
+      DB_USER         = aws_db_instance.mydb.username
+      DB_PASSWORD     = aws_db_instance.mydb.password
+      DB_NAME         = aws_db_instance.mydb.db_name
+      DB_PORT         = "3306"
+      MAILGUN_API_KEY = var.mailgun_api_key
     }
   }
 
@@ -28,6 +29,12 @@ resource "aws_lambda_function" "email_verification_lambda" {
 
 resource "aws_sns_topic" "email_verification" {
   name = "email_verification_sns_topic"
+}
+
+resource "aws_sns_topic_subscription" "email_verification_subscription" {
+  topic_arn = aws_sns_topic.email_verification.arn
+  protocol  = "lambda"
+  endpoint  = aws_lambda_function.email_verification_lambda.arn
 }
 
 resource "aws_lambda_permission" "allow_sns" {

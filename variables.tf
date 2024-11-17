@@ -282,6 +282,10 @@ variable "https_ipv6_cidr" {
   type        = list(string)
 }
 
+variable "mailgun_api_key" {
+  description = "MailGun API Key"
+  type        = string
+}
 
 
 

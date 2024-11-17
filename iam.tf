@@ -109,3 +109,10 @@ resource "aws_iam_role_policy_attachment" "sns_publish" {
   role       = aws_iam_role.lambda_execution_role.name
   policy_arn = aws_iam_policy.sns_publish_policy.arn
 }
+
+resource "aws_iam_role_policy_attachment" "ec2_sns_publish_policy_attachment" {
+  role       = aws_iam_role.ec2_access_role.name
+  policy_arn = aws_iam_policy.sns_publish_policy.arn
+}
+
+

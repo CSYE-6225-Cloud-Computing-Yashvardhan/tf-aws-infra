@@ -45,6 +45,15 @@ resource "aws_security_group" "db_sg" {
     description     = "Allow MySQL traffic from the app security group"
   }
 
+  ingress {
+    from_port       = var.db_port
+    to_port         = var.db_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lambda_sg.id]
+    description     = "Allow MySQL traffic from the Lambda security group"
+  }
+
+
   egress {
     from_port   = var.outbound_port
     to_port     = var.outbound_port
@@ -95,14 +104,6 @@ resource "aws_security_group" "lb_sg" {
 resource "aws_security_group" "lambda_sg" {
   vpc_id = aws_vpc.main.id
   name   = "lambda-security-group"
-
-  ingress {
-    from_port       = var.db_port
-    to_port         = var.db_port
-    protocol        = "tcp"
-    security_groups = [aws_security_group.db_sg.id]
-    description     = "Allow MySQL traffic from Lambda"
-  }
 
   egress {
     from_port   = 0
