@@ -4,7 +4,12 @@ resource "aws_lambda_function" "email_verification_lambda" {
   role          = aws_iam_role.lambda_execution_role.arn
   handler       = "index.handler"
   runtime       = "nodejs18.x"
-  timeout       = 15
+  timeout       = 30
+
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
 
   environment {
     variables = {
@@ -21,6 +26,7 @@ resource "aws_lambda_function" "email_verification_lambda" {
     Name = "email-verification-lambda"
   }
 }
+
 
 resource "aws_sns_topic" "email_verification" {
   name = "email_verification_sns_topic"
