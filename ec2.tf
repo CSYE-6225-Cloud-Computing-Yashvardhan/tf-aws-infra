@@ -10,7 +10,8 @@ resource "aws_launch_template" "web_app_launch_template" {
               touch .env
               echo "DB_HOST=${element(split(":", aws_db_instance.mydb.endpoint), 0)}" >> /home/csye6225/webapp/.env
               echo "DB_USER=${aws_db_instance.mydb.username}" >> /home/csye6225/webapp/.env
-              echo "DB_PASSWORD=${aws_db_instance.mydb.password}" >> /home/csye6225/webapp/.env
+              dbpass=$(aws secretsmanager get-secret-value --secret-id "db-password-secret" --query "SecretString" --output text)
+              echo "DB_PASSWORD=$dbpass" >> /home/csye6225/webapp/.env
               echo "DB_NAME=${aws_db_instance.mydb.db_name}" >> /home/csye6225/webapp/.env
               echo "DB_PORT=3306" >> /home/csye6225/webapp/.env
               echo "PORT=3000" >> /home/csye6225/webapp/.env
@@ -41,6 +42,7 @@ resource "aws_launch_template" "web_app_launch_template" {
       delete_on_termination = true
       volume_size           = 25
       volume_type           = "gp2"
+      kms_key_id            = aws_kms_key.ec2_key.arn
     }
   }
 

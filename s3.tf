@@ -28,7 +28,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "webapp_bucket_enc
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = var.encrypt_algo
+      sse_algorithm     = var.encrypt_algo
+      kms_master_key_id = aws_kms_key.s3_key.arn
     }
   }
 }

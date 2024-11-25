@@ -287,5 +287,10 @@ variable "mailgun_api_key" {
   type        = string
 }
 
+variable "account_id" {
+  description = "account id"
+  type        = string
+}
+
 
 
