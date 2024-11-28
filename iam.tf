@@ -110,4 +110,76 @@ resource "aws_iam_role_policy_attachment" "ec2_sns_publish_policy_attachment" {
   policy_arn = aws_iam_policy.sns_publish_policy.arn
 }
 
+resource "aws_iam_role_policy" "lambda_secrets_manager_access" {
+  name   = "LambdaSecretsManagerAccessPolicy"
+  role   = aws_iam_role.lambda_execution_role.name
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue"
+            ],
+            "Resource": "${aws_secretsmanager_secret.email_service.arn}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt"
+            ],
+            "Resource": "${aws_kms_key.general_purpose_key.arn}"
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_policy" "secrets_manager_access_policy" {
+  name        = "ec2_secrets_manager_access_policy"
+  description = "Policy to allow EC2 access to Secrets Manager"
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ],
+        "Resource" : "${aws_secretsmanager_secret.db_password.arn}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "ec2_secrets_manager_access" {
+  name   = "EC2_SecretsManagerAccessPolicy"
+  role   = aws_iam_role.ec2_access_role.name
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue"
+            ],
+            "Resource": "${aws_secretsmanager_secret.db_password.arn}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt"
+            ],
+            "Resource": "${aws_kms_key.ec2_key.arn}"
+        }
+    ]
+}
+EOF
+}
+
+
 

@@ -1,7 +1,7 @@
 resource "aws_kms_key" "ec2_key" {
   description             = "KMS key for EC2 volume encryption"
   enable_key_rotation     = true
-  deletion_window_in_days = 30
+  deletion_window_in_days = 7
   policy                  = <<EOF
 {
     "Id": "ec2-kms-policy",
@@ -27,27 +27,12 @@ resource "aws_kms_key" "ec2_key" {
                 "kms:Decrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*",
-                "kms:DescribeKey"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Sid": "Allow attachment of persistent resources",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::${var.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
-            },
-            "Action": [
+                "kms:DescribeKey",
                 "kms:CreateGrant",
                 "kms:ListGrants",
                 "kms:RevokeGrant"
             ],
-            "Resource": "*",
-            "Condition": {
-                "Bool": {
-                    "kms:GrantIsForAWSResource": "true"
-                }
-            }
+            "Resource": "*"
         }
     ]
 }
@@ -58,7 +43,7 @@ EOF
 resource "aws_kms_key" "rds_key" {
   description             = "KMS key for RDS encryption"
   enable_key_rotation     = true
-  deletion_window_in_days = 30
+  deletion_window_in_days = 7
   policy                  = <<EOF
 {
     "Id": "rds-kms-policy",
@@ -73,8 +58,8 @@ resource "aws_kms_key" "rds_key" {
             "Action": "kms:*",
             "Resource": "*"
         },
-        {
-            "Sid": "Allow RDS Encryption",
+                {
+            "Sid": "Allow use of the key",
             "Effect": "Allow",
             "Principal": {
                 "AWS": "arn:aws:iam::${var.account_id}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
@@ -84,32 +69,25 @@ resource "aws_kms_key" "rds_key" {
                 "kms:Decrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*",
-                "kms:DescribeKey"
-            ],
-            "Resource": "*",
-            "Condition": {
-                "StringEquals": {
-                    "rds:ResourceTag/Name": "csye6225-db"
-                }
-            }
-        },
-        {
-            "Sid": "Allow Grant Creation for RDS Resources",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::${var.account_id}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
-            },
-            "Action": [
+                "kms:DescribeKey",
                 "kms:CreateGrant",
                 "kms:ListGrants",
                 "kms:RevokeGrant"
             ],
-            "Resource": "*",
-            "Condition": {
-                "Bool": {
-                    "kms:GrantIsForAWSResource": "true"
-                }
-            }
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow use of the key",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "${aws_iam_role.ec2_access_role.arn}"
+            },
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*"
+            ],
+            "Resource": "*"
         }
     ]
 }
@@ -120,7 +98,7 @@ EOF
 resource "aws_kms_key" "s3_key" {
   description             = "KMS key for S3 encryption"
   enable_key_rotation     = true
-  deletion_window_in_days = 30
+  deletion_window_in_days = 7
   policy                  = <<EOF
 {
     "Id": "s3-kms-policy",
@@ -139,7 +117,7 @@ resource "aws_kms_key" "s3_key" {
             "Sid": "Allow S3 Encryption",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::${var.account_id}:role/aws-service-role/s3.amazonaws.com/AWSServiceRoleForS3"
+                "AWS": "${aws_iam_role.ec2_access_role.arn}"
             },
             "Action": [
                 "kms:Encrypt",
@@ -159,7 +137,7 @@ resource "aws_kms_key" "s3_key" {
             "Sid": "Allow Grant Creation for S3 Resources",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::${var.account_id}:role/aws-service-role/s3.amazonaws.com/AWSServiceRoleForS3"
+                "AWS": "${aws_iam_role.ec2_access_role.arn}"
             },
             "Action": [
                 "kms:CreateGrant",
@@ -179,8 +157,50 @@ EOF
 
 }
 
+resource "aws_kms_key" "general_purpose_key" {
+  description             = "KMS key for general-purpose secret encryption"
+  enable_key_rotation     = true
+  deletion_window_in_days = 7
+  policy                  = <<EOF
+{
+    "Id": "general-purpose-kms-policy",
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Allow access for Root",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${var.account_id}:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow use of the key for Secrets Manager",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "${aws_iam_role.lambda_execution_role.arn}"
+            },
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+}
+
+resource "random_id" "secret_suffix" {
+  byte_length = 4
+}
+
 resource "aws_secretsmanager_secret" "db_password" {
-  name       = "db-password-secret"
+  name       = "db-password-secret-${random_id.secret_suffix.hex}"
   kms_key_id = aws_kms_key.rds_key.arn
 }
 
@@ -192,8 +212,8 @@ resource "aws_secretsmanager_secret_version" "db_password_version" {
 }
 
 resource "aws_secretsmanager_secret" "email_service" {
-  name       = "email-service-secret"
-  kms_key_id = aws_kms_key.rds_key.arn
+  name       = "email-service-secret-${random_id.secret_suffix.hex}"
+  kms_key_id = aws_kms_key.general_purpose_key.arn
 }
 
 resource "aws_secretsmanager_secret_version" "email_service_version" {
@@ -203,3 +223,6 @@ resource "aws_secretsmanager_secret_version" "email_service_version" {
   })
 }
 
+output "db_password_name" {
+  value = aws_secretsmanager_secret.db_password.name
+}
