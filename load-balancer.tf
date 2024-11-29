@@ -32,8 +32,10 @@ resource "aws_lb_target_group" "web_app_tg" {
 
 resource "aws_lb_listener" "web_app_listener" {
   load_balancer_arn = aws_lb.web_app_lb.arn
-  port              = var.http_port
-  protocol          = "HTTP"
+  port              = var.https_port
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.demo_ssl_cert_arn
 
   default_action {
     type             = "forward"

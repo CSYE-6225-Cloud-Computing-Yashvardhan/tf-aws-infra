@@ -129,7 +129,7 @@ resource "aws_iam_role_policy" "lambda_secrets_manager_access" {
             "Action": [
                 "kms:Decrypt"
             ],
-            "Resource": "${aws_kms_key.general_purpose_key.arn}"
+            "Resource": "${aws_kms_key.secrets_manager_key.arn}"
         }
     ]
 }
@@ -175,6 +175,13 @@ resource "aws_iam_role_policy" "ec2_secrets_manager_access" {
                 "kms:Decrypt"
             ],
             "Resource": "${aws_kms_key.ec2_key.arn}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt"
+            ],
+            "Resource": "${aws_kms_key.secrets_manager_key.arn}"
         }
     ]
 }

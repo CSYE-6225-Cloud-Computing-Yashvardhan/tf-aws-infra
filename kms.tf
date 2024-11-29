@@ -126,12 +126,7 @@ resource "aws_kms_key" "s3_key" {
                 "kms:GenerateDataKey*",
                 "kms:DescribeKey"
             ],
-            "Resource": "*",
-            "Condition": {
-                "StringEquals": {
-                    "s3:ResourceTag/Name": "webapp-bucket"
-                }
-            }
+            "Resource": "*"
         },
         {
             "Sid": "Allow Grant Creation for S3 Resources",
@@ -157,7 +152,7 @@ EOF
 
 }
 
-resource "aws_kms_key" "general_purpose_key" {
+resource "aws_kms_key" "secrets_manager_key" {
   description             = "KMS key for general-purpose secret encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 7
@@ -176,10 +171,25 @@ resource "aws_kms_key" "general_purpose_key" {
             "Resource": "*"
         },
         {
-            "Sid": "Allow use of the key for Secrets Manager",
+            "Sid": "Allow use of the key for lambda role",
             "Effect": "Allow",
             "Principal": {
                 "AWS": "${aws_iam_role.lambda_execution_role.arn}"
+            },
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow use of the key for EC2 Role",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "${aws_iam_role.ec2_access_role.arn}"
             },
             "Action": [
                 "kms:Encrypt",
@@ -201,7 +211,7 @@ resource "random_id" "secret_suffix" {
 
 resource "aws_secretsmanager_secret" "db_password" {
   name       = "db-password-secret-${random_id.secret_suffix.hex}"
-  kms_key_id = aws_kms_key.rds_key.arn
+  kms_key_id = aws_kms_key.secrets_manager_key.arn
 }
 
 resource "aws_secretsmanager_secret_version" "db_password_version" {
@@ -213,7 +223,7 @@ resource "aws_secretsmanager_secret_version" "db_password_version" {
 
 resource "aws_secretsmanager_secret" "email_service" {
   name       = "email-service-secret-${random_id.secret_suffix.hex}"
-  kms_key_id = aws_kms_key.general_purpose_key.arn
+  kms_key_id = aws_kms_key.secrets_manager_key.arn
 }
 
 resource "aws_secretsmanager_secret_version" "email_service_version" {
