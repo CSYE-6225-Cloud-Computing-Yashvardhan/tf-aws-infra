@@ -217,7 +217,8 @@ resource "aws_secretsmanager_secret" "db_password" {
 resource "aws_secretsmanager_secret_version" "db_password_version" {
   secret_id = aws_secretsmanager_secret.db_password.id
   secret_string = jsonencode({
-    password = aws_db_instance.mydb.password
+    password = aws_db_instance.mydb.password,
+    host     = element(split(":", aws_db_instance.mydb.endpoint), 0)
   })
 }
 
