@@ -287,5 +287,15 @@ variable "mailgun_api_key" {
   type        = string
 }
 
+variable "account_id" {
+  description = "account id"
+  type        = string
+}
+
+variable "demo_ssl_cert_arn" {
+  description = "Demo SSL Certificate ARN"
+  type        = string
+}
+
 
 

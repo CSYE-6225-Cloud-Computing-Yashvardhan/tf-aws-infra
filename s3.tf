@@ -24,11 +24,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "webapp_bucket_lifecycle" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "webapp_bucket_encryption" {
-  bucket = aws_s3_bucket.webapp_bucket.id
+  bucket     = aws_s3_bucket.webapp_bucket.id
+  depends_on = [aws_kms_key.s3_key]
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = var.encrypt_algo
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.s3_key.arn
     }
   }
 }

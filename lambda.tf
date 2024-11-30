@@ -13,12 +13,13 @@ resource "aws_lambda_function" "email_verification_lambda" {
 
   environment {
     variables = {
-      DB_HOST         = element(split(":", aws_db_instance.mydb.endpoint), 0)
-      DB_USER         = aws_db_instance.mydb.username
-      DB_PASSWORD     = aws_db_instance.mydb.password
-      DB_NAME         = aws_db_instance.mydb.db_name
-      DB_PORT         = "3306"
-      MAILGUN_API_KEY = var.mailgun_api_key
+      DB_HOST                 = element(split(":", aws_db_instance.mydb.endpoint), 0)
+      DB_USER                 = aws_db_instance.mydb.username
+      DB_PASSWORD             = aws_db_instance.mydb.password
+      DB_NAME                 = aws_db_instance.mydb.db_name
+      DB_PORT                 = "3306"
+      MAILGUN_API_KEY         = var.mailgun_api_key
+      EMAIL_SERVICE_SECRET_ID = aws_secretsmanager_secret.email_service.name
     }
   }
 

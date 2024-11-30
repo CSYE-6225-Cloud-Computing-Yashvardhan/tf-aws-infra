@@ -62,13 +62,13 @@ resource "aws_security_group" "lb_sg" {
   name        = "load-balancer-security-group"
   description = "Allow HTTP and HTTPS traffic to load balancer"
 
-  ingress {
+  /*ingress {
     from_port        = var.http_port
     to_port          = var.http_port
     protocol         = var.protocol
     cidr_blocks      = var.http_cidr
     ipv6_cidr_blocks = var.http_ipv6_cidr
-  }
+  }*/
 
   ingress {
     from_port        = var.https_port
