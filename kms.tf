@@ -2,6 +2,7 @@ resource "aws_kms_key" "ec2_key" {
   description             = "KMS key for EC2 volume encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 7
+  rotation_period_in_days = 90
   policy                  = <<EOF
 {
     "Id": "ec2-kms-policy",
@@ -44,6 +45,7 @@ resource "aws_kms_key" "rds_key" {
   description             = "KMS key for RDS encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 7
+  rotation_period_in_days = 90
   policy                  = <<EOF
 {
     "Id": "rds-kms-policy",
@@ -99,6 +101,7 @@ resource "aws_kms_key" "s3_key" {
   description             = "KMS key for S3 encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 7
+  rotation_period_in_days = 90
   policy                  = <<EOF
 {
     "Id": "s3-kms-policy",
@@ -126,7 +129,7 @@ resource "aws_kms_key" "s3_key" {
                 "kms:GenerateDataKey*",
                 "kms:DescribeKey"
             ],
-            "Resource": "*"
+            "Resource" : "*"
         },
         {
             "Sid": "Allow Grant Creation for S3 Resources",
@@ -139,7 +142,7 @@ resource "aws_kms_key" "s3_key" {
                 "kms:ListGrants",
                 "kms:RevokeGrant"
             ],
-            "Resource": "*",
+            "Resource" : "*",
             "Condition": {
                 "Bool": {
                     "kms:GrantIsForAWSResource": "true"
@@ -156,6 +159,7 @@ resource "aws_kms_key" "secrets_manager_key" {
   description             = "KMS key for general-purpose secret encryption"
   enable_key_rotation     = true
   deletion_window_in_days = 7
+  rotation_period_in_days = 90
   policy                  = <<EOF
 {
     "Id": "general-purpose-kms-policy",
